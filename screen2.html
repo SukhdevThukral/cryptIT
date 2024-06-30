@@ -387,7 +387,7 @@
 
                         document.getElementById('logout-btn').addEventListener('click', () => {
                             auth.signOut().then(() => {
-                                window.location.href = 'homepage';
+                                window.location.href = 'homePage';
                             }).catch(error => {
                                 console.error(error);
                             });
@@ -398,7 +398,7 @@
                         document.body.classList.remove('loading');
                     });
                 } else {
-                    window.location.href = "homepage";
+                    window.location.href = "homePage";
                 }
             });
 
