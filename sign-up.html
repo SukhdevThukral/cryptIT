@@ -82,9 +82,8 @@
                     <img class="whiteCorener2" src="corner.svg" alt="">
                     <img class="whiteCorener3" src="corner.svg" alt="">
                     <img class="whiteCorener4" src="corner.svg" alt="">
-                    <div id="sukhdev-name1" style="font-size: 30px; text-align: left;">Sukhdev</div>
-                    <div id="sukhdev-name2" style="font-size: 30px; text-align: left;">Sukhdev</div>
-                    <div id="discord-id" style="font-size: 20px; text-align: left; color: #549DC6;">titan__o_o</div>
+                    <div id="sukhdev-name1" style="font-size: 30px; text-align: left; text-shadow: 2px 2.5px 0px #549DC6;">Name</div>
+                    <div id="discord-id" style="font-size: 20px; text-align: left; color: #549DC6;">discord-id</div>
                 </div>
             </div>
             <div class="form-container">
@@ -98,7 +97,7 @@
                         <img class="whiteCorener2" src="corner.svg" alt="">
                         <img class="whiteCorener3" src="corner.svg" alt="">
                         <img class="whiteCorener4" src="corner.svg" alt="">
-                        <input type="text" id="name" placeholder="Name">
+                        <input onkeypress="discordFunc()" type="text" id="name" placeholder="Name">
                     </div>
                     <div>
                         <img class="whiteCorener1" src="corner.svg" alt="">
@@ -110,7 +109,7 @@
                     <div><img class="whiteCorener1" src="corner.svg" alt="">
                         <img class="whiteCorener2" src="corner.svg" alt="">
                         <img class="whiteCorener3" src="corner.svg" alt="">
-                        <img class="whiteCorener4" src="corner.svg" alt=""><input type="text" id="discord-id-input"
+                        <img class="whiteCorener4" src="corner.svg" alt=""><input onkeypress="discordFunc()" type="text" id="discord-id-input"
                             placeholder="Discord ID">
                     </div>
                     <div><img class="whiteCorener1" src="corner.svg" alt="">
@@ -140,6 +139,17 @@
     <div class="spinner" id="spinner"></div>
 
     <script>
+        function discordFunc() {
+            const discordId = document.getElementById("discord-id")
+            const userEdit = document.getElementById("sukhdev-name1")
+            const user = document.getElementById("name")
+            const discordIdInput = document.getElementById("discord-id-input")
+
+            discordId.innerHTML = discordIdInput.value
+            userEdit.innerHTML = user.value
+        }
+
+
         const firebaseConfig = {
             apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
             authDomain: "nigga-ac4ba.firebaseapp.com",

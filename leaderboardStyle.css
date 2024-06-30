@@ -100,7 +100,6 @@ nav a {
     display:flex;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
 }
 
 
@@ -139,6 +138,16 @@ nav a {
     margin: 10px 0;
     padding: 10px;
     border-bottom: 1px solid #E6E3DB;
+}
+
+.list-item:nth-child(1) > .item-right > .number{
+    background-color: #549DC6;
+}
+.list-item:nth-child(2) > .item-right > .number{
+    background-color: #549DC6;
+}
+.list-item:nth-child(3) > .item-right > .number{
+    background-color: #549DC6;
 }
 
 .item-left {
