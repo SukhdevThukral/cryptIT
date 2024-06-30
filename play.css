@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Mouse';
     src: url('mouse-webfont.woff') format('woff'),
-    url('mouse-webfont.woff2') format('woff2');
+        url('mouse-webfont.woff2') format('woff2');
 }
 
 body {
@@ -16,9 +16,76 @@ body {
 }
 
 .level1 {
-    margin-top: -87px;
     color: #549DC6;
-    margin-left: -8px;
+    text-shadow: 5px 3px 0px #E6E3DB;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lvl {
+    background: rgba(255, 0, 0, 0.504);
+    width: 30%;
+    top: -10%;
+    height: 7vh;
+    position: absolute;
+    border-radius: 10px;
+}
+
+.questionContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.question {
+    position: absolute;
+    background: rgba(255, 0, 0, 0.522);
+    width: 60vw;
+    border-radius: 20px;
+    height: 50vh;
+    top: 0;
+}
+
+.inputGrey {
+    width: 1050px;
+    height: 8vh;
+    position: absolute;
+    border-radius: 10px;
+}
+
+.skeletonDivs{
+    display: block;
+    opacity: 1;
+    z-index: 100000;
+    background: linear-gradient(
+      90deg,
+      #27272700 0,
+      #272727 4rem,
+      #27272700 8rem
+    ),
+    #1b1b1b;
+  background-repeat: repeat-y;
+  background-size: 50px 500px;
+  background-position: -50% 0;
+  animation: shine 2s cubic-bezier(0.57, 0.21, 0.69, 1.25) forwards infinite;
+  transition: all 150ms ease-in-out;
+}
+
+  @keyframes shine {
+    to {
+      background-position: 150% 0;
+    }
+  }
+
+.btnGrey {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 header {
@@ -29,6 +96,11 @@ header {
     padding: 20px 40px;
     box-sizing: border-box;
     margin-top: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 10vh;
+    z-index: 10000;
 }
 
 ::placeholder {
@@ -54,7 +126,7 @@ nav a {
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    padding: 0 20px;
+    padding: 10vh 20px 0 20px;
     box-sizing: border-box;
 }
 
@@ -63,18 +135,18 @@ main {
 }
 
 main h2 {
-    font-size: 4rem; 
+    font-size: 4rem;
     margin-bottom: 20px;
 }
 
 main p {
     font-size: 2.5rem;
-    margin: 30px 0; 
+    margin: 30px 0;
 }
 
 .answer-box {
     margin-top: auto;
-    padding-bottom: 40px; 
+    padding-bottom: 7vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,27 +164,30 @@ input[type="text"] {
 }
 
 
-.whiteCorener1{
+.whiteCorener1 {
     position: absolute;
     width: 9px;
     left: -3px;
     top: -3px;
 }
-.whiteCorener2{
+
+.whiteCorener2 {
     position: absolute;
     width: 9px;
     right: -3px;
     top: -3px;
     transform: rotate(90deg);
 }
-.whiteCorener3{
+
+.whiteCorener3 {
     position: absolute;
     width: 9px;
     right: -3px;
     bottom: -3px;
     transform: rotate(180deg);
 }
-.whiteCorener4{
+
+.whiteCorener4 {
     position: absolute;
     width: 9px;
     left: -3px;
@@ -121,9 +196,12 @@ input[type="text"] {
 }
 
 
-.inputContainer{
+.inputContainer {
     border: 3px solid #E6E3DB;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 button#submit-btn {
@@ -137,13 +215,17 @@ button#submit-btn {
     font-family: 'mouse', sans-serif;
     cursor: pointer;
     margin-left: 2vw;
+    position: relative;
 }
 
 button#submit-btn:hover {
     background-color: #3b7da1;
 }
 
-p#feedback {
-    margin-top: 20px;
+#feedback {
     font-size: 1.5rem;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }

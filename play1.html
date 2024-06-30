@@ -53,9 +53,16 @@
     </header>
     <div class="container">
         <main>
-            <h2 class="level">Level 1</h2>
-            <h2 class="level1">Level 1</h2>
-            <p id="question">Did you read the rules?</p>
+            <h2 class="level1">
+                Level 1
+                <div class="lvl skeletonDivs"></div>
+            </h2>
+            <div class="questionContainer">
+                <p id="question">
+                    Did you read the rules?
+                    <div class="question skeletonDivs"></div>
+                </p>
+            </div>
         </main>
         <div class="answer-box">
             <div class="inputContainer">
@@ -63,15 +70,20 @@
                 <img class="whiteCorener2" src="corner.svg" alt="">
                 <img class="whiteCorener3" src="corner.svg" alt="">
                 <img class="whiteCorener4" src="corner.svg" alt="">
+                <div class="inputGrey skeletonDivs"></div>
                 <input id="answer-input" type="text" placeholder="Type Answer....">
             </div>
-            <button id="submit-btn">Submit</button>
+            <button id="submit-btn">
+                Submit
+                <div class="btnGrey skeletonDivs"></div>
+            </button>
             <p id="feedback"></p>
         </div>
     </div>
     <div class="spinner" id="loading-spinner"></div>
 
     <script>
+
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
@@ -91,8 +103,23 @@
 
         const spinner = document.getElementById('loading-spinner');
 
-        document.body.classList.add('loading');
-        spinner.style.display = 'block';
+        skeletons = document.getElementsByClassName("skeletonDivs")
+        function startLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "1"
+                e.style.pointerEvents = "all"
+            }
+        }
+        function endLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "0"
+                e.style.pointerEvents = "none"
+            }
+        }
+
+        startLoader()
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -101,13 +128,12 @@
 
                 const userId = user.uid;
                 database.ref('users/' + userId).once('value').then((snapshot) => {
-                    document.body.classList.remove('loading');
-                    spinner.style.display = 'none';
+                    endLoader()
                     const userData = snapshot.val();
                     const currentQuestion = (userData.score) / 10;
 
                     if (currentQuestion != expectedQuestionNumber) {
-                        window.location.href = `play${currentQuestion + 1}.html`;
+                        // window.location.href = `play${currentQuestion + 1}.html`;
                     }
 
                 });
@@ -213,8 +239,7 @@
                             level1Completed: true
                         };
 
-                        spinner.style.display = 'block';
-                        document.body.classList.add('loading');
+                        startLoader()
 
                         userRef.update(userData);
                         leaderboardRef.update(userData)
@@ -223,14 +248,12 @@
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);
-                                spinner.style.display = 'none';
-                                document.body.classList.remove('loading');
+                                endLoader()
                             });
                     })
                     .catch(error => {
                         console.error('Error fetching user data:', error);
-                        spinner.style.display = 'none';
-                        document.body.classList.remove('loading');
+                        endLoader()
                     });
             }
         };
