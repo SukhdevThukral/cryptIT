@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-8</title>
+    <title>Level-14</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -59,7 +59,8 @@
             </h2>
             <div class="questionContainer">
                 <div id="question" class="questionText hideme">
-                    [image]
+                    Byte loves Wiki, you love Wiki, Everybody loves Wiki. <br><br>
+                    “प्रत्येक पीढ़ी को उसके पूर्ववर्ती द्वारा पाला जाता है; इसलिए उत्तरार्द्ध को अपने ____ को बेहतर बनाने के लिए सुधार करना चाहिए।”
                 </div>
                 <div class="question skeletonDivs"></div>
             </div>
@@ -171,7 +172,8 @@
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
-            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
+            accountUser = "question-" + String(parseInt(document.title.slice(-2)) - 1)
+            
 
             try {
                 const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
@@ -264,7 +266,7 @@
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play9.html";
+                                window.location.href = "play15.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);

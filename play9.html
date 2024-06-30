@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypt.IT 2024 - Level 9</title>
+    <title>Level-9</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         .spinner {
             display: none;
@@ -16,7 +18,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
+            border-top: 16px solid #549DC6;
             border-radius: 50%;
             width: 80px;
             height: 80px;
@@ -25,49 +27,68 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
         }
     </style>
 </head>
-<body>
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="spinner"></div>
-    </div>
 
+<body>
     <header>
         <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
         <nav>
-            <a href="play9.html">Play</a>
+            <a href="play1.html">Play</a>
             <a href="leaderboard.html">Leaderboard</a>
         </nav>
     </header>
     <div class="container">
         <main>
-            <h2 class="level">Level 9</h2>
-            <h2 class="level1">Level 9</h2>
-            <p>What is the answer to the fifth puzzle?</p>
+            <h2 class="level1">
+                <span class="hideme">Level 1</span>
+                <div class="lvl skeletonDivs"></div>
+            </h2>
+            <div class="questionContainer">
+                <div id="question" class="questionText hideme">
+                    No self promotions but the poster is cool ig?
+                    It was late though, doesn’t mean it's useless, right?                    
+                <div class="question skeletonDivs"></div>
+            </div>
         </main>
         <div class="answer-box">
-            <input id="answer-input" type="text" placeholder="Type Answer....">
-            <button id="submit-btn">Submit</button>
+            <div class="inputContainer">
+                <img class="whiteCorener1" src="corner.svg" alt="">
+                <img class="whiteCorener2" src="corner.svg" alt="">
+                <img class="whiteCorener3" src="corner.svg" alt="">
+                <img class="whiteCorener4" src="corner.svg" alt="">
+                <div class="inputGrey skeletonDivs"></div>
+                <div id="btnGrey" class="btnGrey skeletonDivs"></div>
+                <input id="answer-input" type="text" class="hideme" placeholder="Type Answer....">
+            </div>
+            <button id="submit-btn" class="hideme">
+                Submit
+                <img class="whiteCorener1" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener2" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener3" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener4" src="cornerBlue.svg" alt="">
+            </button>
             <p id="feedback"></p>
         </div>
     </div>
+    <div class="spinner" id="loading-spinner"></div>
 
-    <script>  
-         
+    <script>
+
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
             authDomain: "nigga-ac4ba.firebaseapp.com",
@@ -79,75 +100,149 @@
             measurementId: "G-529B6E6J34"
         };
 
-
-        firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const spinner = document.querySelector('.spinner');
-        const answerInput = document.getElementById('answer-input');
+        const spinner = document.getElementById('loading-spinner');
+
+        skeletons = document.getElementsByClassName("skeletonDivs")
+        hideme = document.getElementsByClassName("hideme")
         const submitBtn = document.getElementById('submit-btn');
+        const btnGrey = document.getElementById("btnGrey")
+
+        btnGrey.style.height = submitBtn.offsetHeight + 'px'
+        btnGrey.style.width = submitBtn.offsetWidth + 'px'
+
+
+        
+        function startLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "1"
+                e.style.pointerEvents = "all"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "0"
+            }
+        }
+        function endLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "0"
+                e.style.pointerEvents = "none"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "1"
+            }
+        }
+
+        startLoader()
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+
+                expectedQuestionNumber = 0
+
+                const userId = user.uid;
+                database.ref('users/' + userId).once('value').then((snapshot) => {
+                    endLoader()
+                    const userData = snapshot.val();
+                    const currentQuestion = (userData.score) / 10;
+
+                    if (currentQuestion != expectedQuestionNumber) {
+                        // window.location.href = `play${currentQuestion + 1}.html`;
+                    }
+
+                });
+            } else {
+                console.log('No user is signed in.');
+                window.location.href = "loginPage.html";
+            }
+        });
+
+
+        const answerInput = document.getElementById('answer-input');
+        const questionTxt = document.getElementById('question');
         const feedback = document.getElementById('feedback');
 
-        function showLoading() {
-            loadingOverlay.style.display = 'block';
-            spinner.style.display = 'block';
-        }
+        async function checkAccountLogin() {
+            accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
+            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
 
-        function hideLoading() {
-            loadingOverlay.style.display = 'none';
-            spinner.style.display = 'none';
-        }
+            try {
+                const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
 
-        function checkAuthAndLevel() {
-            showLoading();
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    console.log('User is signed in:', user);
-                    checkLevelStatus(user.uid);
-                } else {
-                    console.log('No user is signed in.');
-                    window.location.href = "loginPage.html";
+
+                if (querySnapshot.empty) {
+                    console.log("Question not found.")
+                    return;
                 }
-            });
+
+                let t;
+                querySnapshot.forEach(doc => {
+                    t = doc.data().answer.toLowerCase();
+                });
+
+                if (accountPwd === t) {
+                    feedback.textContent = replys[0];
+                    feedback.style.color = 'green';
+                    saveLevelStatus('play1', true);
+                    incrementScore();
+                } else if (accountPwd === "") {
+                    feedback.textContent = replys[1];
+                    feedback.style.color = 'orange';
+                }
+                else {
+                    feedback.textContent = replys[2];
+                    feedback.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error getting acoountPWD:', error);
+            }
         }
 
-        function checkAnswer() {
+
+        const replys = ['Correct answer!', 'Please enter an answer.', 'Skill issue, Try Again!']
+        const checkAnswer = () => {
             const answer = answerInput.value.trim().toLowerCase();
-            const correctAnswer = 'your-answer'; // Replace with your actual answer
+            const affirmativeAnswers = ['yes', 'yeah', 'ye', 'yep', 'yup', 'sure', 'affirmative', 'indeed', 'certainly', 'done'];
 
             if (answer === "") {
                 feedback.textContent = 'Please enter an answer.';
                 feedback.style.color = 'orange';
-            } else if (answer === correctAnswer) {
+            } else if (affirmativeAnswers.includes(answer)) {
                 feedback.textContent = 'Correct answer!';
                 feedback.style.color = 'green';
+                saveLevelStatus('play1', true); // Save level status as done
                 incrementScore();
             } else {
-                feedback.textContent = 'Wrong answer. Here\'s a small clue: Add your clue here.';
+                feedback.textContent = 'Wrong answer. Here\'s a small clue: Use your head.';
                 feedback.style.color = 'red';
             }
-        }
+        };
 
-        function checkLevelStatus(uid) {
-            const userRef = database.ref('users/' + uid);
-            userRef.once('value')
-                .then(snapshot => {
-                    const userData = snapshot.val();
-                    if (userData && userData.level9Completed) {
-                        window.location.href = "play10.html"; // Redirect to next level
-                    } else {
-                        hideLoading();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking level status:', error);
-                    hideLoading();
-                });
-        }
+        const saveLevelStatus = (level, status) => {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid + '/play');
+                const updateData = {};
+                updateData[level] = { done: status };
 
-        function incrementScore() {
+                userRef.update(updateData)
+                    .then(() => {
+                        console.log('Level status updated successfully.');
+                    })
+                    .catch(error => {
+                        console.error('Error updating level status:', error);
+                    });
+            }
+        };
+
+        const incrementScore = () => {
             const user = auth.currentUser;
             if (user) {
                 const userRef = database.ref('users/' + user.uid);
@@ -161,36 +256,36 @@
 
                         const userData = {
                             score: currentScore,
-                            level9Completed: true
+                            level1Completed: true
                         };
 
-                        showLoading();
+                        startLoader()
 
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play10.html"; // Redirect to next level
+                                window.location.href = "play10.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);
-                                hideLoading();
+                                endLoader()
                             });
                     })
                     .catch(error => {
                         console.error('Error fetching user data:', error);
-                        hideLoading();
+                        endLoader()
                     });
             }
-        }
+        };
 
-        submitBtn.addEventListener('click', checkAnswer);
-        answerInput.addEventListener('keypress', event => {
+        submitBtn.addEventListener('click', checkAccountLogin);
+
+        answerInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                checkAnswer();
+                checkAccountLogin();
             }
         });
-
-        checkAuthAndLevel();
     </script>
 </body>
+
 </html>

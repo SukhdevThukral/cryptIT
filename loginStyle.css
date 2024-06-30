@@ -226,12 +226,16 @@ body {
     position: relative;
 }
 
+textarea:focus, input:focus{
+    outline: none;
+}
+
 .form input {
     display: block;
     margin: 0.8em 0;
     padding: 1em;
     width: calc(100% - 2em);
-    background-color: black;
+    background-color: transparent;
     color: #E6E3DB;
     border: transparent;
     font-size: 1.2em;

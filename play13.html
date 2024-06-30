@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-8</title>
+    <title>Level-13</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -59,7 +59,7 @@
             </h2>
             <div class="questionContainer">
                 <div id="question" class="questionText hideme">
-                    [image]
+                    [image] [with the song *the imitation game* playing in the background ]
                 </div>
                 <div class="question skeletonDivs"></div>
             </div>
@@ -171,7 +171,8 @@
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
-            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
+            accountUser = "question-" + String(parseInt(document.title.slice(-2)) - 1)
+            
 
             try {
                 const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
@@ -264,7 +265,7 @@
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play9.html";
+                                window.location.href = "play14.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);

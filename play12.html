@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-8</title>
+    <title>Level-12</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -59,7 +59,13 @@
             </h2>
             <div class="questionContainer">
                 <div id="question" class="questionText hideme">
-                    [image]
+                    -Find the coordinates here somewhere <br>
+                    "Got it, what's next?" <br>
+                    "Have you received the instructions?" <br>
+                    "No, but I came across a D9ZBv8GT." <br> <br>
+
+                    Keep in mind that sometimes things are not as they seem. Consider the possibility of opposites..
+
                 </div>
                 <div class="question skeletonDivs"></div>
             </div>
@@ -116,7 +122,7 @@
         btnGrey.style.width = submitBtn.offsetWidth + 'px'
 
 
-        
+
         function startLoader() {
             for (let i = 0; i < skeletons.length; i++) {
                 const e = skeletons[i];
@@ -171,7 +177,7 @@
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
-            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
+            accountUser = "question-" + String(parseInt(document.title.slice(-2)) - 1)
 
             try {
                 const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
@@ -264,7 +270,7 @@
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play9.html";
+                                window.location.href = "play13.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);

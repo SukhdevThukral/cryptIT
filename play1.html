@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypt.IT 2024</title>
+    <title>Level-1</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -54,14 +54,15 @@
     <div class="container">
         <main>
             <h2 class="level1">
-                Level 1
+                <span class="hideme">Level 1</span>
                 <div class="lvl skeletonDivs"></div>
             </h2>
             <div class="questionContainer">
-                <p id="question">
-                    Did you read the rules?
-                    <div class="question skeletonDivs"></div>
-                </p>
+                <div id="question" class="questionText hideme">
+                    Byte loves Wiki, you love Wiki, Everybody loves Wiki. <br><br>
+                    “प्रत्येक पीढ़ी को उसके पूर्ववर्ती द्वारा पाला जाता है; इसलिए उत्तरार्द्ध को अपने ____ को बेहतर बनाने के लिए सुधार करना चाहिए।”
+                </div>
+                <div class="question skeletonDivs"></div>
             </div>
         </main>
         <div class="answer-box">
@@ -71,11 +72,11 @@
                 <img class="whiteCorener3" src="corner.svg" alt="">
                 <img class="whiteCorener4" src="corner.svg" alt="">
                 <div class="inputGrey skeletonDivs"></div>
-                <input id="answer-input" type="text" placeholder="Type Answer....">
+                <div id="btnGrey" class="btnGrey skeletonDivs"></div>
+                <input id="answer-input" type="text" class="hideme" placeholder="Type Answer....">
             </div>
-            <button id="submit-btn">
+            <button id="submit-btn" class="hideme">
                 Submit
-                <div class="btnGrey skeletonDivs"></div>
                 <img class="whiteCorener1" src="cornerBlue.svg" alt="">
                 <img class="whiteCorener2" src="cornerBlue.svg" alt="">
                 <img class="whiteCorener3" src="cornerBlue.svg" alt="">
@@ -108,11 +109,24 @@
         const spinner = document.getElementById('loading-spinner');
 
         skeletons = document.getElementsByClassName("skeletonDivs")
+        hideme = document.getElementsByClassName("hideme")
+        const submitBtn = document.getElementById('submit-btn');
+        const btnGrey = document.getElementById("btnGrey")
+
+        btnGrey.style.height = submitBtn.offsetHeight + 'px'
+        btnGrey.style.width = submitBtn.offsetWidth + 'px'
+
+
+        
         function startLoader() {
             for (let i = 0; i < skeletons.length; i++) {
                 const e = skeletons[i];
                 e.style.opacity = "1"
                 e.style.pointerEvents = "all"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "0"
             }
         }
         function endLoader() {
@@ -120,6 +134,10 @@
                 const e = skeletons[i];
                 e.style.opacity = "0"
                 e.style.pointerEvents = "none"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "1"
             }
         }
 
@@ -137,7 +155,7 @@
                     const currentQuestion = (userData.score) / 10;
 
                     if (currentQuestion != expectedQuestionNumber) {
-                        window.location.href = `play${currentQuestion + 1}.html`;
+                        // window.location.href = `play${currentQuestion + 1}.html`;
                     }
 
                 });
@@ -150,12 +168,11 @@
 
         const answerInput = document.getElementById('answer-input');
         const questionTxt = document.getElementById('question');
-        const submitBtn = document.getElementById('submit-btn');
         const feedback = document.getElementById('feedback');
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
-            accountUser = document.getElementById('question').innerHTML.trim();
+            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
 
             try {
                 const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
