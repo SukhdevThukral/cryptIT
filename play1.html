@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         .spinner {
-            display: none; 
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -25,8 +27,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading {
@@ -35,11 +42,12 @@
         }
     </style>
 </head>
-<body class="loading">
+
+<body>
     <header>
         <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
         <nav>
-            <a href="play.html">Play</a>
+            <a href="play1.html">Play</a>
             <a href="leaderboard.html">Leaderboard</a>
         </nav>
     </header>
@@ -47,7 +55,7 @@
         <main>
             <h2 class="level">Level 1</h2>
             <h2 class="level1">Level 1</h2>
-            <p>Did you read the rules?</p>
+            <p id="question">Did you read the rules?</p>
         </main>
         <div class="answer-box">
             <input id="answer-input" type="text" placeholder="Type Answer....">
@@ -58,7 +66,6 @@
     <div class="spinner" id="loading-spinner"></div>
 
     <script>
-        
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
@@ -74,6 +81,7 @@
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         const spinner = document.getElementById('loading-spinner');
 
@@ -82,18 +90,71 @@
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log('User is signed in:', user);
-                checkLevelStatus(user.uid);
+
+                expectedQuestionNumber = 0
+
+                const userId = user.uid;
+                database.ref('users/' + userId).once('value').then((snapshot) => {
+                    document.body.classList.remove('loading');
+                    spinner.style.display = 'none';
+                    const userData = snapshot.val();
+                    const currentQuestion = (userData.score) / 10;
+
+                    if (currentQuestion != expectedQuestionNumber) {
+                        window.location.href = `play${currentQuestion + 1}.html`;
+                    }
+
+                });
             } else {
                 console.log('No user is signed in.');
                 window.location.href = "loginPage.html";
             }
         });
 
+
         const answerInput = document.getElementById('answer-input');
+        const questionTxt = document.getElementById('question');
         const submitBtn = document.getElementById('submit-btn');
         const feedback = document.getElementById('feedback');
 
+        async function checkAccountLogin() {
+            accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
+            accountUser = document.getElementById('question').innerHTML.trim();
+
+            try {
+                const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
+
+
+                if (querySnapshot.empty) {
+                    console.log("Question not found.")
+                    return;
+                }
+
+                let t;
+                querySnapshot.forEach(doc => {
+                    t = doc.data().answer.toLowerCase();
+                });
+
+                if (accountPwd === t) {
+                    feedback.textContent = replys[0];
+                    feedback.style.color = 'green';
+                    saveLevelStatus('play1', true);
+                    incrementScore();
+                } else if (accountPwd === "") {
+                    feedback.textContent = replys[1];
+                    feedback.style.color = 'orange';
+                }
+                else {
+                    feedback.textContent = replys[2];
+                    feedback.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error getting acoountPWD:', error);
+            }
+        }
+
+
+        const replys = ['Correct answer!', 'Please enter an answer.', 'Wrong answer. Here\'s a small clue: Make sure to read the rules carefully.']
         const checkAnswer = () => {
             const answer = answerInput.value.trim().toLowerCase();
             const affirmativeAnswers = ['yes', 'yeah', 'ye', 'yep', 'yup', 'sure', 'affirmative', 'indeed', 'certainly', 'done'];
@@ -110,25 +171,6 @@
                 feedback.textContent = 'Wrong answer. Here\'s a small clue: Make sure to read the rules carefully.';
                 feedback.style.color = 'red';
             }
-        };
-
-        const checkLevelStatus = (uid) => {
-            const userRef = database.ref('users/' + uid);
-            userRef.once('value')
-                .then(snapshot => {
-                    const userData = snapshot.val();
-                    if (userData && userData.play && userData.play.play1 && userData.play.play1.done) {
-                        window.location.href = "play2.html"; 
-                    } else {
-                        document.body.classList.remove('loading');
-                        spinner.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking level status:', error);
-                    document.body.classList.remove('loading');
-                    spinner.style.display = 'none';
-                });
         };
 
         const saveLevelStatus = (level, status) => {
@@ -162,7 +204,7 @@
 
                         const userData = {
                             score: currentScore,
-                            level1Completed: true 
+                            level1Completed: true
                         };
 
                         spinner.style.display = 'block';
@@ -187,13 +229,14 @@
             }
         };
 
-        submitBtn.addEventListener('click', checkAnswer);
+        submitBtn.addEventListener('click', checkAccountLogin);
 
         answerInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                checkAnswer();
+                checkAccountLogin();
             }
         });
     </script>
 </body>
+
 </html>
