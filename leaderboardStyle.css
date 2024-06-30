@@ -137,7 +137,6 @@ nav a {
     align-items: center;
     margin: 10px 0;
     padding: 10px;
-    border-bottom: 1px solid #E6E3DB;
 }
 
 .list-item:nth-child(1) > .item-right > .number{
