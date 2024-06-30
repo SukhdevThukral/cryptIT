@@ -58,7 +58,13 @@
             <p id="question">Did you read the rules?</p>
         </main>
         <div class="answer-box">
-            <input id="answer-input" type="text" placeholder="Type Answer....">
+            <div class="inputContainer">
+                <img class="whiteCorener1" src="corner.svg" alt="">
+                <img class="whiteCorener2" src="corner.svg" alt="">
+                <img class="whiteCorener3" src="corner.svg" alt="">
+                <img class="whiteCorener4" src="corner.svg" alt="">
+                <input id="answer-input" type="text" placeholder="Type Answer....">
+            </div>
             <button id="submit-btn">Submit</button>
             <p id="feedback"></p>
         </div>
@@ -101,7 +107,7 @@
                     const currentQuestion = (userData.score) / 10;
 
                     if (currentQuestion != expectedQuestionNumber) {
-                        window.location.href = `play${currentQuestion + 1}.html`;
+                        // window.location.href = `play${currentQuestion + 1}.html`;
                     }
 
                 });
@@ -154,7 +160,7 @@
         }
 
 
-        const replys = ['Correct answer!', 'Please enter an answer.', 'Wrong answer. Here\'s a small clue: Make sure to read the rules carefully.']
+        const replys = ['Correct answer!', 'Please enter an answer.', 'Skill issue, Try Again!']
         const checkAnswer = () => {
             const answer = answerInput.value.trim().toLowerCase();
             const affirmativeAnswers = ['yes', 'yeah', 'ye', 'yep', 'yup', 'sure', 'affirmative', 'indeed', 'certainly', 'done'];
