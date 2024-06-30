@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypt.IT 2024 - Level 10</title>
+    <link rel="stylesheet" href="play.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <header>
+        <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
+        <nav>
+            <a href="play.html">Play</a>
+            <a href="leaderboard.html">Leaderboard</a>
+        </nav>
+    </header>
+    <div class="container">
+        <main>
+            <h2 class="level">Level 10</h2>
+            <h2 class="level1">Level 10</h2>
+            <p>What is the answer to the fifth puzzle?</p>
+        </main>
+        <div class="answer-box">
+            <input id="answer-input" type="text" placeholder="Type Answer....">
+            <button id="submit-btn">Submit</button>
+            <p id="feedback"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', event => {
+            event.preventDefault();
+        });
+
+        document.addEventListener('keydown', function (event) {
+            const key = event.key.toLowerCase();
+            const answerInput = document.getElementById('answer-input');
+
+            if (document.activeElement === answerInput) {
+                return;
+            }
+
+            if (
+                event.key === 'F12' ||
+                (event.ctrlKey && event.shiftKey && (key === 'i' || key === 'j')) ||
+                (event.ctrlKey && (key === 'u'))
+            ) {
+                event.preventDefault();
+            }
+        });
+
+        (function() {
+            var devtools = /./;
+            devtools.toString = function() {
+                if (!sessionStorage.getItem('reloaded')) {
+                    alert("PLEASE PLAY FAIR!");
+                }
+                sessionStorage.removeItem('reloaded'); 
+                return '';
+            };
+            console.log('%c', devtools);
+        })();
+
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('reloaded', 'true');
+        });
+
+        window.addEventListener('load', function() {
+            sessionStorage.removeItem('reloaded');
+        });       
+         
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
+            authDomain: "nigga-ac4ba.firebaseapp.com",
+            databaseURL: "https://nigga-ac4ba-default-rtdb.firebaseio.com",
+            projectId: "nigga-ac4ba",
+            storageBucket: "nigga-ac4ba.appspot.com",
+            messagingSenderId: "118443551963",
+            appId: "1:118443551963:web:f82ec26a08cb4ff751f0fe",
+            measurementId: "G-529B6E6J34"
+        };
+
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const spinner = document.querySelector('.spinner');
+        const answerInput = document.getElementById('answer-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedback = document.getElementById('feedback');
+
+        function showLoading() {
+            loadingOverlay.style.display = 'block';
+            spinner.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+            spinner.style.display = 'none';
+        }
+
+        function checkAuthAndLevel() {
+            showLoading();
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    console.log('User is signed in:', user);
+                    checkLevelStatus(user.uid);
+                } else {
+                    console.log('No user is signed in.');
+                    window.location.href = "loginPage.html";
+                }
+            });
+        }
+
+        function checkAnswer() {
+            const answer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = 'your-answer'; // Replace with your actual answer
+
+            if (answer === "") {
+                feedback.textContent = 'Please enter an answer.';
+                feedback.style.color = 'orange';
+            } else if (answer === correctAnswer) {
+                feedback.textContent = 'Correct answer!';
+                feedback.style.color = 'green';
+                incrementScore();
+            } else {
+                feedback.textContent = 'Wrong answer. Here\'s a small clue: Add your clue here.';
+                feedback.style.color = 'red';
+            }
+        }
+
+        function checkLevelStatus(uid) {
+            const userRef = database.ref('users/' + uid);
+            userRef.once('value')
+                .then(snapshot => {
+                    const userData = snapshot.val();
+                    if (userData && userData.level10Completed) {
+                        window.location.href = "play11.html"; // Redirect to next level
+                    } else {
+                        hideLoading();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking level status:', error);
+                    hideLoading();
+                });
+        }
+
+        function incrementScore() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                const leaderboardRef = database.ref('leaderboard/' + user.uid);
+
+                userRef.once('value')
+                    .then(snapshot => {
+                        let currentScore = snapshot.val().score || 0;
+                        console.log('Current score:', currentScore);
+                        currentScore += 10;
+
+                        const userData = {
+                            score: currentScore,
+                            level10Completed: true
+                        };
+
+                        showLoading();
+
+                        userRef.update(userData);
+                        leaderboardRef.update(userData)
+                            .then(() => {
+                                window.location.href = "play11.html"; // Redirect to next level
+                            })
+                            .catch(error => {
+                                console.error('Error updating score in leaderboard:', error);
+                                hideLoading();
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user data:', error);
+                        hideLoading();
+                    });
+            }
+        }
+
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', event => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        checkAuthAndLevel();
+    </script>
+</body>
+</html>

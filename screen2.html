@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypt.IT 2024</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="screen2.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <style>
+        .submit-avatar-btn {
+            background-color: #0F0F0F;
+            color: #549DC6;
+            border: 1px solid #549DC6;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .spinner {
+            display: none; 
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #549DC6;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
+        <nav>
+            <a href="play.html">Play</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <div class="tooltip">
+                <button id="logout-btn" class="bi bi-box-arrow-right" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #549DC6;"></button>
+                <span class="tooltiptext">Sign out</span>
+            </div>
+
+        </nav>
+    </header>
+    <div class="container">
+        <div class="dates">
+            <p class="date1">11:59 pm 1 July to 11:59 pm 2 July</p>
+            <p class="date2">11:59 pm 1 July to 11:59 pm 2 July</p>
+        </div>
+        <div class="main-content">
+            <div class="avatar-section">
+                <div class="outer-frame">
+                    <div class="inner-frame">
+                        <div id="choose-avatar-text">Choose Avatar</div>
+                        <div class="avatar-container">
+                            <div class="avatar-preview-container">
+                                <div class="avatar-preview-box">
+                                    <img id="avatar-preview" class="avatar-preview" src="" alt="Avatar Preview">
+                                </div>
+                            </div>
+                            <input type="file" id="avatar-input" accept="image/jpeg, image/png, image/jpg" style="display: none;">
+                            <button id="remove-avatar-btn" class="remove-avatar-btn" style="display: none;">Remove Avatar</button>
+                            <button id="submit-avatar-btn" class="submit-avatar-btn" style="display: none;">Submit Avatar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="name-container">
+                    <div id="user-name" style="font-size: 20px; text-align: left;"></div>
+                    <div id="user-email" style="font-size: 20px; text-align: left;"></div>
+                    <div id="user-discord-id" style="font-size: 20px; text-align: left; color: #549DC6;"></div>
+                    <div id="user-password" style="font-size: 20px; text-align: left;"></div>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="level">
+                    <p class="level">Level</p>
+                    <p class="level1">Level</p>
+                    <p class="level2" id="user-level">00/20</p>
+                </div>
+                <div class="levelRanks">
+                    <p class="level3">Ranking</p>
+                    <p class="level4">Ranking</p>
+                    <p class="level5" id="user-rank">00/20</p>
+                </div>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/pIC4anJIRFg?si=qukgXsJ0IdODI2Lg&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="margin-top: -800px; margin-left: -150px;"></iframe>
+                <div class="dropdown-container">
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            <i class="bi bi-chevron-down icon"></i> About The Event
+                        </button>
+                        <div class="dropdown-content">
+                            <p>Crypt.IT is a cryptic hunt event being held during Byte.IT'24, the annual tech fest of Bal Bharati Public School, Pitampura. A 24-hour cryptic hunt requiring you to solve several puzzles in succession, wherein you have to decipher and connect the given clues and hunt for an answer with the internet at your disposal.</p>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            <i class="bi bi-chevron-down icon"></i> Rules
+                        </button>
+                        <div class="dropdown-content">
+                            <p>
+                                <li>Make sure you have registered on the platform.</li> 
+                                <li>All hints & lead confirmations will be done via official Discord server only; link will be available above.</li>
+                                <li>Asking other players for hints is an offense and can lead to disqualification if found.
+                                Sharing answers or hints is strictly prohibited among users via any medium. Only organizers hold this right. If found will lead to direct disqualification.</li>
+                                <li>To report misconduct by any player, please DM the event coordinators.</li>
+                                <li>Reverse engineering the platform means direct ban from the competition. Bugs if found should be reported and not exploited. Exploiting a bug also leads to disqualification.</li>
+                                <li>Decision by organizers is final and should not be questioned.</li>
+                                <li>By playing the game, you adhere to agree to all the rules above. Now say anything and we will let you in.</li>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropbtn">
+                            <i class="bi bi-chevron-down icon"></i> Guidelines
+                        </button>
+                        <div class="dropdown-content">
+                            <p>
+                                <li>All answers are lower case without any special characters like space, "?", "/", etc. Don't worry though, we normalize your inputs anyways! Answer may contain digits though (in that case write the word not the digits i.e. 5 = five)!</li>
+                                <li>File passwords are all lower case without any special characters. We do not normalize this. So be wary while you enter file passwords. Passwords may contain digits though!</li>
+                                <li>Stay aware for in platform hints or Discord hints. They could take you far in the game. Every clue in the question is important. If it wasn't important, it wouldn't be there.</li>
+                                <li>Beware of the spelling you enter, we do not autocorrect. You can always clear your doubts on the Discord server. Be sure not to discuss answers or question about answers in any way. And if it was not obvious, team play, answer sharing, hint sharing and collaborating with other competitors in general is not allowed and any such evidence can lead to disqualification.</li>
+                                <li>We have anti-cheats installed in our code that can easily catch cheaters and ban them directly.</li>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="spinner" id="spinner"></div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
+            authDomain: "nigga-ac4ba.firebaseapp.com",
+            databaseURL: "https://nigga-ac4ba-default-rtdb.firebaseio.com",
+            projectId: "nigga-ac4ba",
+            storageBucket: "nigga-ac4ba.appspot.com",
+            messagingSenderId: "118443551963",
+            appId: "1:118443551963:web:f82ec26a08cb4ff751f0fe",
+            measurementId: "G-529B6E6J34"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const chooseAvatarBtn = document.getElementById('choose-avatar-text');
+            const avatarInput = document.getElementById('avatar-input');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+            const submitAvatarBtn = document.getElementById('submit-avatar-btn');
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const userDiscordId = document.getElementById('user-discord-id');
+            const userPassword = document.getElementById('user-password');
+            const userLevel = document.getElementById('user-level');
+            const userRank = document.getElementById('user-rank');
+            const spinner = document.getElementById('spinner');
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            chooseAvatarBtn.addEventListener('click', function() {
+                avatarInput.click();
+            });
+
+            avatarInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        avatarPreview.style.display = 'block';
+                        removeAvatarBtn.style.display = 'block';
+                        submitAvatarBtn.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeAvatarBtn.addEventListener('click', function() {
+                const user = auth.currentUser;
+                if (user) {
+                    const uid = user.uid;
+                    const userRef = database.ref('users/' + uid);
+
+                    spinner.style.display = 'block'; 
+                    document.body.classList.add('loading'); 
+
+                    userRef.update({ avatarURL: null }).then(function() {
+                        avatarPreview.src = '';
+                        avatarPreview.style.display = 'none';
+                        removeAvatarBtn.style.display = 'none';
+                        submitAvatarBtn.style.display = 'none';
+
+                        spinner.style.display = 'none'; 
+                        document.body.classList.remove('loading');
+                    }).catch(function(error) {
+                        console.error('Error removing avatar URL:', error);
+                        spinner.style.display = 'none';
+                        document.body.classList.remove('loading'); 
+                    });
+                }
+            });
+
+            submitAvatarBtn.addEventListener('click', function() {
+                const file = avatarInput.files[0];
+                if (file) {
+                    const user = auth.currentUser;
+                    if (user) {
+                        const uid = user.uid;
+                        const storageRef = storage.ref().child('avatars/' + uid + '/' + file.name);
+                        const uploadTask = storageRef.put(file);
+
+                        spinner.style.display = 'block'; 
+                        submitAvatarBtn.disabled = true; 
+                        document.body.classList.add('loading'); 
+
+                        uploadTask.on('state_changed', 
+                            function(snapshot) {
+                            }, 
+                            function(error) {
+                                console.error('Upload failed:', error);
+                                spinner.style.display = 'none'; 
+                                submitAvatarBtn.disabled = false; 
+                                document.body.classList.remove('loading'); 
+                            }, 
+                            function() {
+                                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                                    const userRef = database.ref('users/' + uid);
+                                    userRef.update({ avatarURL: downloadURL });
+
+                                    const leaderboardRef = database.ref('leaderboard/' + uid);
+                                    leaderboardRef.update({ avatarURL: downloadURL });
+
+                                    avatarPreview.src = downloadURL;
+                                    submitAvatarBtn.style.display = 'none';
+                                    spinner.style.display = 'none'; 
+                                    submitAvatarBtn.disabled = false; 
+                                    document.body.classList.remove('loading'); 
+                                });
+                            }
+                        );
+                    }
+                }
+            });
+
+            dropdowns.forEach(function(dropdown) {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+
+                dropbtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+
+                    dropdowns.forEach(function(d) {
+                        if (d !== dropdown) {
+                            d.querySelector('.dropdown-content').classList.remove('show');
+                            d.querySelector('.dropbtn').classList.remove('active');
+                        }
+                    });
+
+                    dropdownContent.classList.toggle('show');
+                    dropbtn.classList.toggle('active');
+                });
+
+                window.addEventListener('click', function(e) {
+                    dropdowns.forEach(function(d) {
+                        if (d.querySelector('.dropdown-content').classList.contains('show') &&
+                            !d.contains(e.target)) {
+                            d.querySelector('.dropdown-content').classList.remove('show');
+                            d.querySelector('.dropbtn').classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            auth.onAuthStateChanged(function(user) {
+    if (user) {
+        const uid = user.uid;
+        const userRef = database.ref('users/' + uid);
+
+        spinner.style.display = 'block'; 
+        document.body.classList.add('loading'); 
+
+        // Fetch total number of users
+        database.ref('users').once('value').then(function(snapshot) {
+            const totalUsers = snapshot.numChildren(); 
+            return totalUsers;
+        }).then(function(totalUsers) {
+            userRef.once('value').then(function(snapshot) {
+                const userData = snapshot.val();
+                if (userData) {
+                    userName.textContent = userData.name;
+                    userDiscordId.textContent = userData.discordId;
+                    userLevel.textContent = getMaxLevel(userData) + "/20"; 
+                    if (userData.avatarURL) {
+                        avatarPreview.src = userData.avatarURL;
+                        avatarPreview.style.display = 'block';
+                        removeAvatarBtn.style.display = 'block';
+                    }
+                }
+                return database.ref('leaderboard').orderByChild('score').once('value');
+            }).then(function(snapshot) {
+                const leaderboardData = [];
+                snapshot.forEach(function(childSnapshot) {
+                    leaderboardData.push({
+                        uid: childSnapshot.key,
+                        score: childSnapshot.val().score
+                    });
+                });
+
+                leaderboardData.sort((a, b) => b.score - a.score);
+
+                const rank = leaderboardData.findIndex(entry => entry.uid === uid) + 1;
+                userRank.textContent = rank + "/" + totalUsers; 
+                
+                spinner.style.display = 'none'; 
+                document.body.classList.remove('loading'); 
+            }).catch(function(error) {
+                console.error('Failed to load user data:', error);
+                spinner.style.display = 'none'; 
+                document.body.classList.remove('loading'); 
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    window.location.href = 'login.html';
+                }).catch(error => {
+                    console.error(error);
+                });
+            });
+        }).catch(function(error) {
+            console.error('Failed to fetch total number of users:', error);
+            spinner.style.display = 'none'; 
+            document.body.classList.remove('loading'); 
+        });
+    } else {
+        window.location.href = "loginPage.html";
+    }
+});
+
+
+
+            function getMaxLevel(userData) {
+                let maxLevel = 0;
+                for (let i = 1; i <= 20; i++) {
+                    if (userData[`level${i}Completed`]) {
+                        maxLevel = i;
+                    } else {
+                        break;
+                    }
+                }
+                return maxLevel;
+            }
+        });
+    </script>
+</body>
+</html>

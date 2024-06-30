@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypt.IT 2024</title>
+    <link rel="stylesheet" href="sign-upStyle.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <style>
+        .spinner {
+            display: none; 
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #549DC6;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header1">Crypt.IT 2024</h1>
+        <h1 class="header2">Crypt.IT 2024</h1>
+        <div class="dates">
+            <p class="date1">11:59 pm 26 August to 11:59 pm 27 August</p>
+            <p class="date2">11:59 pm 26 August to 11:59 pm 27 August</p>
+        </div>
+        <div class="main-content">
+            <div class="avatar-section">
+                <div class="outer-frame">
+                    <div class="inner-frame">
+                        <div id="choose-avatar-text">Choose Avatar</div>
+                        <div class="avatar-container">
+                            <div class="avatar-preview-container">
+                                <div class="avatar-preview-box">
+                                    <img id="avatar-preview" class="avatar-preview" src="" alt="Avatar Preview">
+                                </div>
+                            </div>
+                            <input type="file" id="avatar-input" accept="image/jpeg, image/png, image/jpg" style="display: none;">
+                            <button id="remove-avatar-btn" class="remove-avatar-btn" style="display: none;">Remove Avatar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="name-container">
+                    <div id="sukhdev-name1" style="font-size: 30px; text-align: left;">Sukhdev</div>
+                    <div id="sukhdev-name2" style="font-size: 30px; text-align: left;">Sukhdev</div>
+                    <div id="discord-id" style="font-size: 20px; text-align: left; color: #549DC6;">titan__o_o</div>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="form" id="signup-form">
+                    <input type="text" id="name" placeholder="Name">
+                    <input type="email" id="email" placeholder="Email">
+                    <input type="text" id="discord-id-input" placeholder="Discord ID">
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+                <div class="level">
+                    <p class="level">Level</p>
+                    <p class="level1">Level</p>
+                    <p class="level2">00/20</p>
+                </div>
+                <button id="sign-up-btn">Sign Up</button>
+                <p class="sign-up-btn">Sign Up</p>
+            </div>
+        </div>
+        <p id="success-message" class="success-message" style="display: none;">Form submitted successfully!</p>
+        <p id="error-message" class="error-message" style="display: none;">All fields are required.</p>
+    </div>
+    <div class="spinner" id="spinner"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
+            authDomain: "nigga-ac4ba.firebaseapp.com",
+            databaseURL: "https://nigga-ac4ba-default-rtdb.firebaseio.com",
+            projectId: "nigga-ac4ba",
+            storageBucket: "nigga-ac4ba.appspot.com",
+            messagingSenderId: "118443551963",
+            appId: "1:118443551963:web:f82ec26a08cb4ff751f0fe",
+            measurementId: "G-529B6E6J34"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const chooseAvatarBtn = document.getElementById('choose-avatar-text');
+            const avatarInput = document.getElementById('avatar-input');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+            const signUpBtn = document.getElementById('sign-up-btn');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const spinner = document.getElementById('spinner');
+
+            let avatarFile = null;
+
+            chooseAvatarBtn.addEventListener('click', function() {
+                avatarInput.click();
+            });
+
+            avatarInput.addEventListener('change', function(event) {
+                avatarFile = event.target.files[0];
+                if (avatarFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        avatarPreview.style.display = 'block';
+                        removeAvatarBtn.style.display = 'block';
+                    }
+                    reader.readAsDataURL(avatarFile);
+                }
+            });
+
+            removeAvatarBtn.addEventListener('click', function() {
+                avatarPreview.src = '';
+                avatarPreview.style.display = 'none';
+                removeAvatarBtn.style.display = 'none';
+                avatarFile = null;
+            });
+
+            signUpBtn.addEventListener('click', function() {
+                signUpBtn.disabled = true;
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const discordIdValue = document.getElementById('discord-id-input').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                if (name === '' || email === '' || discordIdValue === '' || password === '') {
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    signUpBtn.disabled = false;
+                } else {
+                    spinner.style.display = 'block';
+                    document.body.classList.add('loading');
+
+                    firebase.auth().createUserWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            const user = userCredential.user;
+
+                            if (avatarFile) {
+                                const avatarStorageRef = storage.ref().child('avatars/' + user.uid + '/' + avatarFile.name);
+                                const uploadTask = avatarStorageRef.put(avatarFile);
+
+                                uploadTask.on('state_changed', 
+                                    function(snapshot) {
+                                    }, 
+                                    function(error) {
+                                        console.error('Error uploading avatar: ', error);
+                                        errorMessage.style.display = 'block';
+                                        successMessage.style.display = 'none';
+                                        spinner.style.display = 'none';
+                                        document.body.classList.remove('loading');
+                                        signUpBtn.disabled = false;
+                                    }, 
+                                    function() {
+                                        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                                            saveUserData(user.uid, name, email, discordIdValue, downloadURL);
+                                        });
+                                    }
+                                );
+                            } else {
+                                saveUserData(user.uid, name, email, discordIdValue, '');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error signing up:', error);
+                            errorMessage.textContent = error.message;
+                            errorMessage.style.display = 'block';
+                            successMessage.style.display = 'none';
+                            spinner.style.display = 'none';
+                            document.body.classList.remove('loading');
+                            signUpBtn.disabled = false;
+                        });
+                }
+            });
+
+            function saveUserData(uid, name, email, discordIdValue, avatarURL) {
+                const userData = {
+                    name: name,
+                    email: email,
+                    discordId: discordIdValue,
+                    avatarURL: avatarURL,
+                    score: 0 
+                };
+
+                database.ref('users/' + uid).set(userData);
+                database.ref('leaderboard/' + uid).set(userData).then(() => {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    spinner.style.display = 'none';
+                    document.body.classList.remove('loading');
+                    setTimeout(() => {
+                        window.location.href = "loadingPage.html";
+                    }, 0);
+                }).catch((error) => {
+                    console.error('Error saving data: ', error);
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    spinner.style.display = 'none';
+                    document.body.classList.remove('loading');
+                    signUpBtn.disabled = false;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
