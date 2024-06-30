@@ -51,7 +51,7 @@ body {
 
 .inputGrey {
     width: 1050px;
-    height: calc(100% + 10px);
+    height: calc(100% + 15px);
     position: absolute;
     border-radius: 10px;
 }
