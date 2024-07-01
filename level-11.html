@@ -45,21 +45,27 @@
 
 <body>
     <header>
-        <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
+        <a href="dashboard.html"><img src="image.png" style="width: 300px;"></a>
         <nav>
-            <a href="play1.html">Play</a>
+            <a href="level-0.html">Play</a>
             <a href="leaderboard.html">Leaderboard</a>
         </nav>
     </header>
     <div class="container">
         <main>
             <h2 class="level1">
-                <span class="hideme">Level 1</span>
+                <span id="lvl" class="hideme">Level 1</span>
                 <div class="lvl skeletonDivs"></div>
             </h2>
             <div class="questionContainer">
                 <div id="question" class="questionText hideme">
-                    Read it yet? 1dmld50
+                    -Find the coordinates here somewhere <br>
+                    "Got it, what's next?" <br>
+                    "Have you received the instructions?" <br>
+                    "No, but I came across a D9ZBv8GT." <br> <br>
+
+                    Keep in mind that sometimes things are not as they seem. Consider the possibility of opposites..
+
                 </div>
                 <div class="question skeletonDivs"></div>
             </div>
@@ -116,7 +122,7 @@
         btnGrey.style.width = submitBtn.offsetWidth + 'px'
 
 
-        
+
         function startLoader() {
             for (let i = 0; i < skeletons.length; i++) {
                 const e = skeletons[i];
@@ -160,7 +166,7 @@
                 });
             } else {
                 console.log('No user is signed in.');
-                window.location.href = "loginPage.html";
+                window.location.href = "login.html";
             }
         });
 
@@ -168,6 +174,8 @@
         const answerInput = document.getElementById('answer-input');
         const questionTxt = document.getElementById('question');
         const feedback = document.getElementById('feedback');
+const lvl = document.getElementById('lvl');
+        lvl.innerHTML = document.title
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
@@ -190,7 +198,7 @@
                 if (accountPwd === t) {
                     feedback.textContent = replys[0];
                     feedback.style.color = 'green';
-                    saveLevelStatus('play1', true);
+                    
                     incrementScore();
                 } else if (accountPwd === "") {
                     feedback.textContent = replys[1];
@@ -217,7 +225,7 @@
             } else if (affirmativeAnswers.includes(answer)) {
                 feedback.textContent = 'Correct answer!';
                 feedback.style.color = 'green';
-                saveLevelStatus('play1', true); // Save level status as done
+                 // Save level status as done
                 incrementScore();
             } else {
                 feedback.textContent = 'Wrong answer. Here\'s a small clue: Use your head.';
@@ -264,7 +272,7 @@
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play12.html";
+                                window.location.href = "level-12.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);

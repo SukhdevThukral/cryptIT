@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level-4</title>
+    <link rel="stylesheet" href="play.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #549DC6;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="dashboard.html"><img src="image.png" style="width: 300px;"></a>
+        <nav>
+            <a href="level-0.html">Play</a>
+            <a href="leaderboard.html">Leaderboard</a>
+        </nav>
+    </header>
+    <div class="container">
+        <main>
+            <h2 class="level1">
+                <span id="lvl" class="hideme">Level 1</span>
+                <div class="lvl skeletonDivs"></div>
+            </h2>
+            <div class="questionContainer">
+                <div id="question" class="questionText hideme">
+                    My friend Tony likes Friday, because it comes before the weekend. I like my device simple, been using her for a long time and she’s still with me when I am with bishop.
+                </div>
+                <div class="question skeletonDivs"></div>
+            </div>
+        </main>
+        <div class="answer-box">
+            <div class="inputContainer">
+                <img class="whiteCorener1" src="corner.svg" alt="">
+                <img class="whiteCorener2" src="corner.svg" alt="">
+                <img class="whiteCorener3" src="corner.svg" alt="">
+                <img class="whiteCorener4" src="corner.svg" alt="">
+                <div class="inputGrey skeletonDivs"></div>
+                <div id="btnGrey" class="btnGrey skeletonDivs"></div>
+                <input id="answer-input" type="text" class="hideme" placeholder="Type Answer....">
+            </div>
+            <button id="submit-btn" class="hideme">
+                Submit
+                <img class="whiteCorener1" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener2" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener3" src="cornerBlue.svg" alt="">
+                <img class="whiteCorener4" src="cornerBlue.svg" alt="">
+            </button>
+            <p id="feedback"></p>
+        </div>
+    </div>
+    <div class="spinner" id="loading-spinner"></div>
+
+    <script>
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQU0Fpr2Df8xOYriMJ7pIlBTgxxdVX2Do",
+            authDomain: "nigga-ac4ba.firebaseapp.com",
+            databaseURL: "https://nigga-ac4ba-default-rtdb.firebaseio.com",
+            projectId: "nigga-ac4ba",
+            storageBucket: "nigga-ac4ba.appspot.com",
+            messagingSenderId: "118443551963",
+            appId: "1:118443551963:web:f82ec26a08cb4ff751f0fe",
+            measurementId: "G-529B6E6J34"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const spinner = document.getElementById('loading-spinner');
+
+        skeletons = document.getElementsByClassName("skeletonDivs")
+        hideme = document.getElementsByClassName("hideme")
+        const submitBtn = document.getElementById('submit-btn');
+        const btnGrey = document.getElementById("btnGrey")
+
+        btnGrey.style.height = submitBtn.offsetHeight + 'px'
+        btnGrey.style.width = submitBtn.offsetWidth + 'px'
+
+
+        
+        function startLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "1"
+                e.style.pointerEvents = "all"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "0"
+            }
+        }
+        function endLoader() {
+            for (let i = 0; i < skeletons.length; i++) {
+                const e = skeletons[i];
+                e.style.opacity = "0"
+                e.style.pointerEvents = "none"
+            }
+            for (let i = 0; i < hideme.length; i++) {
+                const e = hideme[i];
+                e.style.opacity = "1"
+            }
+        }
+
+        startLoader()
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+
+                expectedQuestionNumber = 0
+
+                const userId = user.uid;
+                database.ref('users/' + userId).once('value').then((snapshot) => {
+                    endLoader()
+                    const userData = snapshot.val();
+                    const currentQuestion = (userData.score) / 10;
+
+                    if (currentQuestion != expectedQuestionNumber) {
+                        // window.location.href = `play${currentQuestion + 1}.html`;
+                    }
+
+                });
+            } else {
+                console.log('No user is signed in.');
+                window.location.href = "login.html";
+            }
+        });
+
+
+        const answerInput = document.getElementById('answer-input');
+        const questionTxt = document.getElementById('question');
+        const feedback = document.getElementById('feedback');
+const lvl = document.getElementById('lvl');
+        lvl.innerHTML = document.title
+
+        async function checkAccountLogin() {
+            accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
+            accountUser = "question-" + String(parseInt(document.title.slice(-1)))
+
+            try {
+                const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
+
+
+                if (querySnapshot.empty) {
+                    console.log("Question not found.")
+                    return;
+                }
+
+                let t;
+                querySnapshot.forEach(doc => {
+                    t = doc.data().answer.toLowerCase();
+                });
+
+                if (accountPwd === t) {
+                    feedback.textContent = replys[0];
+                    feedback.style.color = 'green';
+                    
+                    incrementScore();
+                } else if (accountPwd === "") {
+                    feedback.textContent = replys[1];
+                    feedback.style.color = 'orange';
+                }
+                else {
+                    feedback.textContent = replys[2];
+                    feedback.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error getting acoountPWD:', error);
+            }
+        }
+
+
+        const replys = ['Correct answer!', 'Please enter an answer.', 'Skill issue, Try Again!']
+        const checkAnswer = () => {
+            const answer = answerInput.value.trim().toLowerCase();
+            const affirmativeAnswers = ['yes', 'yeah', 'ye', 'yep', 'yup', 'sure', 'affirmative', 'indeed', 'certainly', 'done'];
+
+            if (answer === "") {
+                feedback.textContent = 'Please enter an answer.';
+                feedback.style.color = 'orange';
+            } else if (affirmativeAnswers.includes(answer)) {
+                feedback.textContent = 'Correct answer!';
+                feedback.style.color = 'green';
+                 // Save level status as done
+                incrementScore();
+            } else {
+                feedback.textContent = 'Wrong answer. Here\'s a small clue: Use your head.';
+                feedback.style.color = 'red';
+            }
+        };
+
+        const saveLevelStatus = (level, status) => {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid + '/play');
+                const updateData = {};
+                updateData[level] = { done: status };
+
+                userRef.update(updateData)
+                    .then(() => {
+                        console.log('Level status updated successfully.');
+                    })
+                    .catch(error => {
+                        console.error('Error updating level status:', error);
+                    });
+            }
+        };
+
+        const incrementScore = () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                const leaderboardRef = database.ref('leaderboard/' + user.uid);
+
+                userRef.once('value')
+                    .then(snapshot => {
+                        let currentScore = snapshot.val().score || 0;
+                        console.log('Current score:', currentScore);
+                        currentScore += 10;
+
+                        const userData = {
+                            score: currentScore,
+                            level1Completed: true
+                        };
+
+                        startLoader()
+
+                        userRef.update(userData);
+                        leaderboardRef.update(userData)
+                            .then(() => {
+                                window.location.href = "level-5.html";
+                            })
+                            .catch(error => {
+                                console.error('Error updating score in leaderboard:', error);
+                                endLoader()
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user data:', error);
+                        endLoader()
+                    });
+            }
+        };
+
+        submitBtn.addEventListener('click', checkAccountLogin);
+
+        answerInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkAccountLogin();
+            }
+        });
+    </script>
+</body>
+
+</html>

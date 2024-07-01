@@ -94,7 +94,7 @@ input[type="text"] {
     max-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
@@ -102,7 +102,6 @@ input[type="text"] {
 
 .dates {
     font-size: 2.6em;
-    margin-top: 15.8em;
     margin-bottom: 0px;
     pointer-events: none;
     color: #549DC6;
@@ -170,7 +169,6 @@ input[type="text"] {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: -60em;
     flex: 0.8;   
 }
 
@@ -245,11 +243,18 @@ input[type="text"] {
 .form-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
+    justify-content: start;
     flex: 1;
-    height: 500px;
+    height: 600px;
     width: 100%;
-    margin-top: 60.5em;
+    margin: 0;
+}
+
+iframe{
+    margin: 0 !important;
+    min-width: 560px !important;
+    min-height: 315px !important;
 }
 
 .form {
@@ -275,49 +280,55 @@ input[type="text"] {
 }
 
 .level {
-    margin-top: -8em;
-    margin-left: -23.4em;
     font-size: 1.5em;
-    text-align: center;
+    text-align: start;
+    width: calc(50% + 6px + 20px);
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    margin-top: 2.5vh;
+    margin-bottom: 2.5vh;
 }
 
 .levelRanks{
-    margin-top: 5em;
-    margin-left: -21.4em;
     font-size: 1.5em;
     text-align: center;
+    width: calc(50% + 6px + 20px);
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    margin-top: 2vh;
 }
 
 .level1{
-    margin-top: -75px;
-    margin-left: -848.4px;
+    margin: 0vh 0 1vh 0;
+    text-shadow: 3px 3px 0px #549DC6;
     font-size: 1.5em;
     text-align: center;
-    color: #549DC6;
+    color: #E6E3DB;
 }
 
 .level2 {
-    margin-top: -24px;
-    margin-left: -27em;
+    margin: 0;
     font-size: 1.3em;
 }
 
 .level3{
-    margin-top: -8em;
-    margin-left: -23.4em;
+    margin: 0;
     font-size: 1.5em;
     text-align: center;
+    text-shadow: 3px 3px 0px #549DC6;
 }
 .level4{
-    margin-top: -75px;
-    margin-left: -848.4px;
+    margin: 0;
     font-size: 1.52em;
     text-align: center;
     color: #549DC6;
 }
 .level5 {
-    margin-top: -24px;
-    margin-left: -28em;
+    margin: 0;
     font-size: 1.3em;
 }
 ::placeholder{
@@ -327,7 +338,7 @@ input[type="text"] {
 
 
 #sukhdev-name2{
-    margin-top: -32px;
+    /* margin-top: -32px; */
     color: #549DC6;
     margin-left: -3px;
 }
@@ -337,8 +348,7 @@ input[type="text"] {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 80px;
-    margin-left: -380px;
+    margin-top: 2.5vh;
     border: #549DC6;
 }
 
@@ -403,7 +413,7 @@ input[type="text"] {
 }
 
 .dropdown-content.show {
-    max-height: 500px;
+    max-height: 600px;
     padding: 1px;
     margin-left: 30px;
     opacity: 1;

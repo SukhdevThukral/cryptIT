@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-8</title>
+    <title>Level-17</title>
     <link rel="stylesheet" href="play.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -45,21 +45,22 @@
 
 <body>
     <header>
-        <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
+        <a href="dashboard.html"><img src="image.png" style="width: 300px;"></a>
         <nav>
-            <a href="play1.html">Play</a>
+            <a href="level-0.html">Play</a>
             <a href="leaderboard.html">Leaderboard</a>
         </nav>
     </header>
     <div class="container">
         <main>
             <h2 class="level1">
-                <span class="hideme">Level 1</span>
+                <span id="lvl" class="hideme">Level 1</span>
                 <div class="lvl skeletonDivs"></div>
             </h2>
             <div class="questionContainer">
                 <div id="question" class="questionText hideme">
-                    [image]
+                    Byte loves Wiki, you love Wiki, Everybody loves Wiki. <br><br>
+                    “प्रत्येक पीढ़ी को उसके पूर्ववर्ती द्वारा पाला जाता है; इसलिए उत्तरार्द्ध को अपने ____ को बेहतर बनाने के लिए सुधार करना चाहिए।”
                 </div>
                 <div class="question skeletonDivs"></div>
             </div>
@@ -160,7 +161,7 @@
                 });
             } else {
                 console.log('No user is signed in.');
-                window.location.href = "loginPage.html";
+                window.location.href = "login.html";
             }
         });
 
@@ -168,10 +169,13 @@
         const answerInput = document.getElementById('answer-input');
         const questionTxt = document.getElementById('question');
         const feedback = document.getElementById('feedback');
+const lvl = document.getElementById('lvl');
+        lvl.innerHTML = document.title
 
         async function checkAccountLogin() {
             accountPwd = document.getElementById('answer-input').value.trim().toLowerCase();
-            accountUser = "question-" + String(parseInt(document.title.slice(-1)) - 1)
+            accountUser = "question-" + String(parseInt(document.title.slice(-2)) - 1)
+            
 
             try {
                 const querySnapshot = await db.collection('answers').where('question', '==', accountUser).get();
@@ -190,7 +194,7 @@
                 if (accountPwd === t) {
                     feedback.textContent = replys[0];
                     feedback.style.color = 'green';
-                    saveLevelStatus('play1', true);
+                    
                     incrementScore();
                 } else if (accountPwd === "") {
                     feedback.textContent = replys[1];
@@ -217,7 +221,7 @@
             } else if (affirmativeAnswers.includes(answer)) {
                 feedback.textContent = 'Correct answer!';
                 feedback.style.color = 'green';
-                saveLevelStatus('play1', true); // Save level status as done
+                 // Save level status as done
                 incrementScore();
             } else {
                 feedback.textContent = 'Wrong answer. Here\'s a small clue: Use your head.';
@@ -264,7 +268,7 @@
                         userRef.update(userData);
                         leaderboardRef.update(userData)
                             .then(() => {
-                                window.location.href = "play9.html";
+                                window.location.href = "level-18.html";
                             })
                             .catch(error => {
                                 console.error('Error updating score in leaderboard:', error);

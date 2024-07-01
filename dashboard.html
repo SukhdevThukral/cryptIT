@@ -56,9 +56,9 @@
 
 <body>
     <header>
-        <a href="screen2.html"><img src="image.png" style="width: 300px;"></a>
+        <a href="dashboard.html"><img src="image.png" style="width: 300px;"></a>
         <nav>
-            <a href="play1.html">Play</a>
+            <a href="level-0.html">Play</a>
             <a href="leaderboard.html">Leaderboard</a>
             <div class="tooltip">
                 <button id="logout-btn" class="bi bi-box-arrow-right"
@@ -107,24 +107,21 @@
                     <div id="user-discord-id" style="font-size: 20px; text-align: left; color: #549DC6;"></div>
                     <div id="user-password" style="font-size: 20px; text-align: left;"></div>
                 </div>
-            </div>
-            <div class="form-container">
                 <div class="level">
-                    <p class="level">Level</p>
                     <p class="level1">Level</p>
-                    <p class="level2" id="user-level">00/20</p>
+                    <p class="level2" id="user-level">00/18</p>
                 </div>
                 <div class="levelRanks">
                     <p class="level3">Ranking</p>
-                    <p class="level4">Ranking</p>
-                    <p class="level5" id="user-rank">00/20</p>
+                    <p class="level5" id="user-rank">00/18</p>
                 </div>
-                <iframe width="560" height="315"
+            </div>
+            <div class="form-container">
+                <iframe
                     src="https://www.youtube.com/embed/pIC4anJIRFg?si=qukgXsJ0IdODI2Lg&amp;controls=0"
                     title="YouTube video player" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen
-                    style="margin-top: -800px; margin-left: -150px;"></iframe>
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 <div class="dropdown-container">
                     <div class="dropdown">
                         <button class="dropbtn">
@@ -348,7 +345,7 @@
                             if (userData) {
                                 userName.textContent = userData.name;
                                 userDiscordId.textContent = userData.discordId;
-                                userLevel.textContent = getMaxLevel(userData) + "/20";
+                                userLevel.textContent = String(userData.score/10) + "/18";
                                 if (userData.avatarURL) {
                                     avatarPreview.src = userData.avatarURL;
                                     avatarPreview.style.display = 'block';
